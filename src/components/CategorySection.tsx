@@ -1,7 +1,8 @@
 'use client';
 
+import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Newspaper, Trophy, Tv, Film, Baby, BookOpen, Music, Heart } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Newspaper, Trophy, Tv, Film, Baby, BookOpen, Music, Heart } from 'lucide-react';
 import { Category, categoryLabels } from '@/types';
 import { channels } from '@/data/channels';
 import ChannelCard from './ChannelCard';
@@ -37,11 +38,41 @@ const categoryColors: Record<Category, string> = {
 export default function CategorySection({
   category,
   showAll = true,
-  limit = 4,
+  limit = 8,
 }: CategorySectionProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
   const categoryChannels = channels
     .filter((c) => c.category === category)
     .slice(0, limit);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowLeftArrow(el.scrollLeft > 10);
+    setShowRightArrow(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener('scroll', checkScroll, { passive: true });
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      el.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, []);
+
+  const scroll = (direction: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8;
+    el.scrollBy({ left: direction === 'right' ? amount : -amount, behavior: 'smooth' });
+  };
 
   if (categoryChannels.length === 0) return null;
 
@@ -64,7 +95,7 @@ export default function CategorySection({
         {showAll && (
           <Link
             href={`/category/${category}`}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm text-foreground-secondary hover:text-accent hover:bg-background-tertiary rounded-lg transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm text-foreground-secondary hover:text-accent hover:bg-white/5 rounded-lg transition-all"
           >
             View all
             <ChevronRight size={16} />
@@ -72,11 +103,33 @@ export default function CategorySection({
         )}
       </div>
 
-      {/* Channels Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {categoryChannels.map((channel) => (
-          <ChannelCard key={channel.id} channel={channel} />
-        ))}
+      {/* Horizontal Scroll Row */}
+      <div className={`scroll-container ${showLeftArrow ? 'show-fade-left' : ''} ${showRightArrow ? 'show-fade-right' : ''}`}>
+        {showLeftArrow && (
+          <button
+            onClick={() => scroll('left')}
+            className="scroll-arrow scroll-arrow-left hidden lg:flex"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft size={20} />
+          </button>
+        )}
+        <div ref={scrollRef} className="scroll-row">
+          {categoryChannels.map((channel, i) => (
+            <div key={channel.id} className="w-[180px] sm:w-[200px] lg:w-[220px]">
+              <ChannelCard channel={channel} index={i} />
+            </div>
+          ))}
+        </div>
+        {showRightArrow && (
+          <button
+            onClick={() => scroll('right')}
+            className="scroll-arrow scroll-arrow-right hidden lg:flex"
+            aria-label="Scroll right"
+          >
+            <ChevronRight size={20} />
+          </button>
+        )}
       </div>
     </section>
   );

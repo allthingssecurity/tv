@@ -10,7 +10,7 @@ export const metadata = {
 export default function GuidePage() {
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto page-enter">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">TV Guide</h1>
@@ -22,14 +22,14 @@ export default function GuidePage() {
         {/* EPG Timeline */}
         <EPGTimeline hoursToShow={6} />
 
-        {/* Legend */}
-        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-foreground-secondary">
+        {/* Legend (desktop only) */}
+        <div className="hidden lg:flex mt-6 flex-wrap items-center gap-4 text-sm text-foreground-secondary">
           <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded bg-accent/30 border border-accent" />
+            <span className="w-4 h-4 rounded bg-accent/20 border border-accent/40" />
             <span>Currently airing</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded bg-background-tertiary border border-border" />
+            <span className="w-4 h-4 rounded bg-white/[0.03] border border-white/5" />
             <span>Upcoming</span>
           </div>
           <div className="flex items-center gap-2">
@@ -39,12 +39,12 @@ export default function GuidePage() {
         </div>
 
         {/* Tips */}
-        <div className="mt-8 p-4 bg-background-secondary rounded-xl border border-border">
+        <div className="mt-8 glass rounded-xl p-4">
           <h3 className="font-semibold mb-2">Tips</h3>
           <ul className="text-sm text-foreground-secondary space-y-1">
             <li>Click on a channel logo to start watching</li>
             <li>Click on a program to watch that channel</li>
-            <li>Use the navigation arrows to browse different time slots</li>
+            <li className="hidden lg:list-item">Use the navigation arrows to browse different time slots</li>
             <li>Click &quot;Now&quot; to jump back to the current time</li>
           </ul>
         </div>

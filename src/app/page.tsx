@@ -19,22 +19,20 @@ export default function HomePage() {
 
       {/* Quick Stats */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <div className="p-4 bg-background-secondary rounded-xl border border-border text-center">
-          <p className="text-3xl font-bold text-accent">{channels.length}+</p>
-          <p className="text-sm text-foreground-secondary mt-1">Live Channels</p>
-        </div>
-        <div className="p-4 bg-background-secondary rounded-xl border border-border text-center">
-          <p className="text-3xl font-bold text-accent">50+</p>
-          <p className="text-sm text-foreground-secondary mt-1">Countries</p>
-        </div>
-        <div className="p-4 bg-background-secondary rounded-xl border border-border text-center">
-          <p className="text-3xl font-bold text-accent">24/7</p>
-          <p className="text-sm text-foreground-secondary mt-1">Streaming</p>
-        </div>
-        <div className="p-4 bg-background-secondary rounded-xl border border-border text-center">
-          <p className="text-3xl font-bold text-accent">4K</p>
-          <p className="text-sm text-foreground-secondary mt-1">Ultra HD</p>
-        </div>
+        {[
+          { value: `${channels.length}+`, label: 'Live Channels' },
+          { value: '50+', label: 'Countries' },
+          { value: '24/7', label: 'Streaming' },
+          { value: '4K', label: 'Ultra HD' },
+        ].map((stat, i) => (
+          <div
+            key={stat.label}
+            className={`p-4 glass-hover rounded-xl text-center fade-slide-up stagger-${i + 1}`}
+          >
+            <p className="text-3xl font-bold gradient-text">{stat.value}</p>
+            <p className="text-sm text-foreground-secondary mt-1">{stat.label}</p>
+          </div>
+        ))}
       </section>
 
       {/* TV Guide Preview */}
@@ -45,7 +43,7 @@ export default function HomePage() {
 
       {/* Category Sections */}
       {homeCategories.map((category) => (
-        <CategorySection key={category} category={category} limit={4} />
+        <CategorySection key={category} category={category} limit={8} />
       ))}
     </MainLayout>
   );

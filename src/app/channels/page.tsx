@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import MainLayout from '@/components/MainLayout';
 import ChannelCard from '@/components/ChannelCard';
-import { channels, regions } from '@/data/channels';
+import { channels } from '@/data/channels';
 import { Category, categoryLabels } from '@/types';
 import { Search, Filter, Grid, List, X } from 'lucide-react';
 
@@ -24,7 +24,6 @@ export default function ChannelsPage() {
   const filteredChannels = useMemo(() => {
     let filtered = [...channels];
 
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -34,17 +33,14 @@ export default function ChannelsPage() {
       );
     }
 
-    // Category filter
     if (selectedCategory !== 'all') {
       filtered = filtered.filter((c) => c.category === selectedCategory);
     }
 
-    // Country filter
     if (selectedCountry !== 'all') {
       filtered = filtered.filter((c) => c.country === selectedCountry);
     }
 
-    // Sort
     filtered.sort((a, b) => {
       if (sortBy === 'name') {
         return a.name.localeCompare(b.name);
@@ -65,7 +61,7 @@ export default function ChannelsPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto page-enter">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">All Channels</h1>
@@ -75,7 +71,7 @@ export default function ChannelsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-background-secondary rounded-xl border border-border p-4 mb-6">
+        <div className="glass rounded-xl p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -88,7 +84,7 @@ export default function ChannelsPage() {
                 placeholder="Search channels..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-background-tertiary border border-border rounded-lg focus:outline-none focus:border-accent transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-accent transition-colors"
               />
             </div>
 
@@ -97,7 +93,7 @@ export default function ChannelsPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value as Category | 'all')}
-                className="w-full lg:w-44 px-4 py-2.5 bg-background-tertiary border border-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
+                className="w-full lg:w-44 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
               >
                 <option value="all">All Categories</option>
                 {(Object.keys(categoryLabels) as Category[]).map((cat) => (
@@ -117,7 +113,7 @@ export default function ChannelsPage() {
               <select
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value)}
-                className="w-full lg:w-44 px-4 py-2.5 bg-background-tertiary border border-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
+                className="w-full lg:w-44 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
               >
                 <option value="all">All Countries</option>
                 {countries.map((country) => (
@@ -136,20 +132,20 @@ export default function ChannelsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'name' | 'country')}
-              className="w-full lg:w-36 px-4 py-2.5 bg-background-tertiary border border-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
+              className="w-full lg:w-36 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg appearance-none cursor-pointer focus:outline-none focus:border-accent"
             >
               <option value="name">Sort by Name</option>
               <option value="country">Sort by Country</option>
             </select>
 
             {/* View Toggle */}
-            <div className="flex border border-border rounded-lg overflow-hidden">
+            <div className="flex border border-white/10 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2.5 ${
                   viewMode === 'grid'
                     ? 'bg-accent text-white'
-                    : 'bg-background-tertiary hover:bg-border'
+                    : 'bg-white/5 hover:bg-white/10'
                 } transition-colors`}
                 aria-label="Grid view"
               >
@@ -160,7 +156,7 @@ export default function ChannelsPage() {
                 className={`p-2.5 ${
                   viewMode === 'list'
                     ? 'bg-accent text-white'
-                    : 'bg-background-tertiary hover:bg-border'
+                    : 'bg-white/5 hover:bg-white/10'
                 } transition-colors`}
                 aria-label="List view"
               >
@@ -171,10 +167,10 @@ export default function ChannelsPage() {
 
           {/* Active Filters */}
           {hasActiveFilters && (
-            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
               <span className="text-sm text-foreground-secondary">Active filters:</span>
               {searchQuery && (
-                <span className="flex items-center gap-1 px-2 py-1 bg-accent/20 text-accent rounded-full text-sm">
+                <span className="flex items-center gap-1 px-2 py-1 bg-accent/15 text-accent rounded-full text-sm border border-accent/20">
                   &quot;{searchQuery}&quot;
                   <button onClick={() => setSearchQuery('')}>
                     <X size={14} />
@@ -182,7 +178,7 @@ export default function ChannelsPage() {
                 </span>
               )}
               {selectedCategory !== 'all' && (
-                <span className="flex items-center gap-1 px-2 py-1 bg-accent/20 text-accent rounded-full text-sm">
+                <span className="flex items-center gap-1 px-2 py-1 bg-accent/15 text-accent rounded-full text-sm border border-accent/20">
                   {categoryLabels[selectedCategory]}
                   <button onClick={() => setSelectedCategory('all')}>
                     <X size={14} />
@@ -190,7 +186,7 @@ export default function ChannelsPage() {
                 </span>
               )}
               {selectedCountry !== 'all' && (
-                <span className="flex items-center gap-1 px-2 py-1 bg-accent/20 text-accent rounded-full text-sm">
+                <span className="flex items-center gap-1 px-2 py-1 bg-accent/15 text-accent rounded-full text-sm border border-accent/20">
                   {selectedCountry}
                   <button onClick={() => setSelectedCountry('all')}>
                     <X size={14} />
@@ -216,14 +212,14 @@ export default function ChannelsPage() {
         {filteredChannels.length > 0 ? (
           viewMode === 'grid' ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredChannels.map((channel) => (
-                <ChannelCard key={channel.id} channel={channel} />
+              {filteredChannels.map((channel, i) => (
+                <ChannelCard key={channel.id} channel={channel} index={i} />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-              {filteredChannels.map((channel) => (
-                <ChannelCard key={channel.id} channel={channel} variant="compact" />
+              {filteredChannels.map((channel, i) => (
+                <ChannelCard key={channel.id} channel={channel} variant="compact" index={i} />
               ))}
             </div>
           )

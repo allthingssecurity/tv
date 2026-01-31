@@ -55,9 +55,7 @@ export default function VideoPlayer({
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           setIsLoading(false);
-          video.play().catch(() => {
-            // Autoplay blocked, wait for user interaction
-          });
+          video.play().catch(() => {});
         });
 
         hls.on(Hls.Events.ERROR, (_, data) => {
@@ -78,7 +76,6 @@ export default function VideoPlayer({
           }
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Safari native HLS support
         video.src = src;
         video.addEventListener('loadedmetadata', () => {
           setIsLoading(false);
@@ -179,7 +176,6 @@ export default function VideoPlayer({
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      {/* Video Element */}
       <video
         ref={videoRef}
         className="w-full h-full"
@@ -218,7 +214,7 @@ export default function VideoPlayer({
       {/* Top Overlay - Channel Info */}
       <div
         className={`
-          absolute top-0 left-0 right-0 p-4 gradient-overlay bg-gradient-to-b from-black/80 to-transparent
+          absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent
           transition-opacity duration-300
           ${showControls ? 'opacity-100' : 'opacity-0'}
         `}
@@ -228,17 +224,17 @@ export default function VideoPlayer({
             <img
               src={channelLogo}
               alt={channelName}
-              className="w-10 h-10 object-contain bg-white/10 rounded-lg p-1"
+              className="w-10 h-10 object-contain bg-white/10 rounded-lg p-1 backdrop-blur-sm"
             />
           )}
           <div>
             <h3 className="font-semibold text-white">{channelName}</h3>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="flex items-center gap-1 text-xs">
-                <span className="w-1.5 h-1.5 bg-danger rounded-full live-indicator" />
+                <span className="w-1.5 h-1.5 bg-danger rounded-full live-pulse-ring" />
                 <span className="text-danger font-medium">LIVE</span>
               </span>
-              <span className="text-xs text-gray-400 px-1.5 py-0.5 bg-white/10 rounded">
+              <span className="text-xs text-gray-400 px-1.5 py-0.5 bg-white/10 rounded backdrop-blur-sm">
                 {quality}
               </span>
             </div>
@@ -249,17 +245,16 @@ export default function VideoPlayer({
       {/* Bottom Controls */}
       <div
         className={`
-          absolute bottom-0 left-0 right-0 p-4 gradient-overlay bg-gradient-to-t from-black/90 to-transparent
+          absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent
           transition-opacity duration-300
           ${showControls ? 'opacity-100' : 'opacity-0'}
         `}
       >
         <div className="flex items-center justify-between">
-          {/* Left Controls */}
           <div className="flex items-center gap-3">
             <button
               onClick={togglePlay}
-              className="w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              className="w-10 h-10 flex items-center justify-center bg-white/15 hover:bg-white/25 rounded-full transition-colors backdrop-blur-sm"
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
@@ -268,7 +263,7 @@ export default function VideoPlayer({
             <div className="flex items-center gap-2 group/volume">
               <button
                 onClick={toggleMute}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/15 rounded-lg transition-colors"
                 aria-label={isMuted ? 'Unmute' : 'Mute'}
               >
                 {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -285,17 +280,16 @@ export default function VideoPlayer({
             </div>
           </div>
 
-          {/* Right Controls */}
           <div className="flex items-center gap-2">
             <button
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/15 rounded-lg transition-colors"
               aria-label="Settings"
             >
               <Settings size={20} />
             </button>
             <button
               onClick={toggleFullscreen}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/15 rounded-lg transition-colors"
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
               {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
@@ -310,7 +304,7 @@ export default function VideoPlayer({
           onClick={togglePlay}
           className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-colors"
         >
-          <div className="w-20 h-20 flex items-center justify-center bg-accent/90 hover:bg-accent rounded-full shadow-lg shadow-accent/30 transition-all">
+          <div className="w-20 h-20 flex items-center justify-center bg-accent/90 hover:bg-accent rounded-full shadow-lg shadow-accent/30 transition-all hover:scale-110 active:scale-95">
             <Play size={36} className="ml-1 text-white" />
           </div>
         </button>

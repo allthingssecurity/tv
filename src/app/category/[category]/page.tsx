@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   const { category } = await params;
   const isValidCategory = category in categoryLabels;
   if (!isValidCategory) return { title: 'Category Not Found' };
-  
+
   const cat = category as Category;
   return {
     title: `${categoryLabels[cat]} Channels - GlobalTV`,
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
-  
+
   if (!(category in categoryLabels)) {
     notFound();
   }
@@ -62,7 +62,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto page-enter">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-foreground-secondary mb-6">
           <Link href="/" className="hover:text-accent transition-colors">Home</Link>
@@ -73,9 +73,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </nav>
 
         {/* Category Header */}
-        <div className="bg-gradient-to-r from-accent/20 via-background-secondary to-background-secondary rounded-2xl p-8 mb-8 border border-border">
-          <div className="flex items-start gap-4">
-            <div className="p-4 bg-accent/20 rounded-xl text-accent">
+        <div className="glass rounded-2xl p-8 mb-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/10 via-transparent to-transparent pointer-events-none" />
+          <div className="relative flex items-start gap-4">
+            <div className="p-4 bg-accent/15 rounded-xl text-accent border border-accent/20">
               {categoryIcons[cat]}
             </div>
             <div>

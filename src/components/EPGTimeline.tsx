@@ -21,7 +21,6 @@ export default function EPGTimeline({
   const containerRef = useRef<HTMLDivElement>(null);
   const channelsToShow = selectedChannels || channels.slice(0, 10);
 
-  // Update current time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -89,10 +88,21 @@ export default function EPGTimeline({
   const showNowIndicator =
     currentTime >= startTime && currentTime < addHours(startTime, hoursToShow);
 
+  // Get current program for mobile card view
+  const getCurrentProgramForChannel = (channelId: string): Program | undefined => {
+    const progs = getProgramsForChannel(channelId);
+    return progs.find((p) => isCurrentProgram(p));
+  };
+
+  const getUpcomingProgramsForChannel = (channelId: string): Program[] => {
+    const progs = getProgramsForChannel(channelId);
+    return progs.filter((p) => new Date(p.startTime) > currentTime).slice(0, 3);
+  };
+
   return (
-    <div className="bg-background-secondary rounded-xl border border-border overflow-hidden">
+    <div className="glass rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-background-tertiary">
+      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/[0.02]">
         <h2 className="text-lg font-semibold">TV Guide</h2>
         <div className="flex items-center gap-2">
           <button
@@ -104,14 +114,14 @@ export default function EPGTimeline({
           </button>
           <button
             onClick={() => navigateTime('prev')}
-            className="p-1.5 hover:bg-background rounded-lg transition-colors"
+            className="p-1.5 hover:bg-white/5 rounded-lg transition-colors"
             aria-label="Previous time slot"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => navigateTime('next')}
-            className="p-1.5 hover:bg-background rounded-lg transition-colors"
+            className="p-1.5 hover:bg-white/5 rounded-lg transition-colors"
             aria-label="Next time slot"
           >
             <ChevronRight size={20} />
@@ -119,21 +129,74 @@ export default function EPGTimeline({
         </div>
       </div>
 
-      {/* Timeline */}
-      <div ref={containerRef} className="overflow-x-auto">
+      {/* Mobile Card Layout */}
+      <div className="lg:hidden divide-y divide-white/5">
+        {channelsToShow.map((channel) => {
+          const currentProg = getCurrentProgramForChannel(channel.id);
+          const upcoming = getUpcomingProgramsForChannel(channel.id);
+          return (
+            <div key={channel.id} className="p-4">
+              <Link
+                href={`/watch/${channel.id}`}
+                className="flex items-center gap-3 mb-3"
+              >
+                <img
+                  src={channel.logo}
+                  alt={channel.name}
+                  className="w-10 h-10 object-contain bg-white/5 rounded-lg p-1"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{channel.name}</p>
+                  <p className="text-xs text-foreground-secondary">{channel.country}</p>
+                </div>
+                {currentProg && (
+                  <span className="flex items-center gap-1 px-2 py-0.5 bg-accent/15 rounded-full border border-accent/20">
+                    <span className="w-1.5 h-1.5 bg-accent rounded-full live-indicator" />
+                    <span className="text-[10px] text-accent font-bold">NOW</span>
+                  </span>
+                )}
+              </Link>
+              {currentProg && (
+                <div className="mb-2 p-2.5 bg-accent/10 rounded-lg border border-accent/15">
+                  <p className="text-sm font-medium">{currentProg.title}</p>
+                  <p className="text-xs text-foreground-secondary mt-0.5">
+                    {format(new Date(currentProg.startTime), 'h:mm')} - {format(new Date(currentProg.endTime), 'h:mm a')}
+                  </p>
+                </div>
+              )}
+              {upcoming.length > 0 && (
+                <div className="scroll-row gap-2 -mx-1 px-1">
+                  {upcoming.map((prog) => (
+                    <div
+                      key={prog.id}
+                      className="flex-shrink-0 w-[160px] p-2 bg-white/[0.03] rounded-lg border border-white/5"
+                    >
+                      <p className="text-xs font-medium truncate">{prog.title}</p>
+                      <p className="text-[10px] text-foreground-secondary mt-0.5">
+                        {format(new Date(prog.startTime), 'h:mm a')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Timeline */}
+      <div ref={containerRef} className="hidden lg:block overflow-x-auto">
         {/* Time Headers */}
-        <div className="flex border-b border-border sticky top-0 bg-background-secondary z-10">
-          {/* Channel column header */}
-          <div className="w-48 flex-shrink-0 p-3 border-r border-border bg-background-tertiary">
+        <div className="flex border-b border-white/5 sticky top-0 z-10 bg-background-secondary/80 backdrop-blur-sm">
+          <div className="w-48 flex-shrink-0 p-3 border-r border-white/5 bg-white/[0.02]">
             <span className="text-sm font-medium text-foreground-secondary">Channel</span>
           </div>
-          {/* Time slots */}
           <div className="flex-1 relative">
             <div className="flex">
               {timeSlots.map((time, index) => (
                 <div
                   key={index}
-                  className="flex-1 p-3 border-r border-border last:border-r-0 text-center"
+                  className="flex-1 p-3 border-r border-white/5 last:border-r-0 text-center"
                 >
                   <span className="text-sm font-medium">{format(time, 'h:mm a')}</span>
                 </div>
@@ -145,11 +208,10 @@ export default function EPGTimeline({
         {/* Channels and Programs */}
         <div className="relative">
           {channelsToShow.map((channel) => (
-            <div key={channel.id} className="flex border-b border-border last:border-b-0 hover:bg-background-tertiary/50">
-              {/* Channel Info */}
+            <div key={channel.id} className="flex border-b border-white/5 last:border-b-0 hover:bg-white/[0.02] transition-colors">
               <Link
                 href={`/watch/${channel.id}`}
-                className="w-48 flex-shrink-0 p-3 border-r border-border flex items-center gap-3 hover:bg-background-tertiary transition-colors"
+                className="w-48 flex-shrink-0 p-3 border-r border-white/5 flex items-center gap-3 hover:bg-white/[0.03] transition-colors"
               >
                 <img
                   src={channel.logo}
@@ -162,7 +224,6 @@ export default function EPGTimeline({
                 </div>
               </Link>
 
-              {/* Programs Timeline */}
               <div className="flex-1 relative h-16">
                 {getProgramsForChannel(channel.id).map((program) => {
                   const style = getProgramStyle(program);
@@ -176,8 +237,8 @@ export default function EPGTimeline({
                         text-xs transition-all cursor-pointer
                         ${
                           isCurrent
-                            ? 'bg-accent/30 border border-accent hover:bg-accent/40'
-                            : 'bg-background-tertiary border border-border hover:bg-border'
+                            ? 'bg-accent/20 border border-accent/40 hover:bg-accent/30'
+                            : 'bg-white/[0.03] border border-white/5 hover:bg-white/[0.06]'
                         }
                       `}
                       style={style}
@@ -194,7 +255,6 @@ export default function EPGTimeline({
             </div>
           ))}
 
-          {/* Now indicator */}
           {showNowIndicator && (
             <div
               className="epg-now-indicator"

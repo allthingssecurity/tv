@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: WatchPageProps) {
   const { id } = await params;
   const channel = getChannelById(id);
   if (!channel) return { title: 'Channel Not Found' };
-  
+
   return {
     title: `Watch ${channel.name} Live - GlobalTV`,
     description: `Stream ${channel.name} live from ${channel.country}. ${channel.category} channel in ${channel.quality} quality.`,
@@ -39,9 +39,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
   const currentProgram = getCurrentProgram(channel.id);
   const relatedChannels = channels
     .filter((c) => c.category === channel.category && c.id !== channel.id)
-    .slice(0, 4);
+    .slice(0, 8);
 
-  // Get upcoming programs
   const channelEpg = epgData.find((e) => e.channelId === channel.id);
   const now = new Date();
   const upcomingPrograms = channelEpg?.programs
@@ -50,7 +49,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto page-enter">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-foreground-secondary mb-4">
           <Link href="/" className="hover:text-accent transition-colors">Home</Link>
@@ -74,7 +73,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           {/* Channel Details */}
           <div className="lg:col-span-2">
-            <div className="bg-background-secondary rounded-xl border border-border p-6">
+            <div className="glass rounded-xl p-6">
               <div className="flex items-start gap-4 mb-6">
                 <div className="w-16 h-16 bg-white/5 rounded-xl p-2 flex-shrink-0">
                   <img
@@ -104,12 +103,16 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
               {/* Current Program */}
               {currentProgram && (
-                <div className="bg-background-tertiary rounded-xl p-4">
+                <div className="bg-accent/5 border border-accent/10 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="flex items-center gap-1 px-2 py-0.5 bg-danger/20 rounded-full">
-                      <span className="w-1.5 h-1.5 bg-danger rounded-full live-indicator" />
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-danger/15 rounded-full border border-danger/20">
+                      <span className="w-1.5 h-1.5 bg-danger rounded-full live-pulse-ring" />
                       <span className="text-xs font-bold text-danger">NOW PLAYING</span>
                     </span>
+                    {/* Audio wave */}
+                    <div className="audio-wave">
+                      <span /><span /><span /><span /><span />
+                    </div>
                   </div>
                   <h3 className="text-lg font-semibold mb-1">{currentProgram.title}</h3>
                   <p className="text-sm text-foreground-secondary mb-2">
@@ -125,13 +128,13 @@ export default async function WatchPage({ params }: WatchPageProps) {
           </div>
 
           {/* Upcoming Programs */}
-          <div className="bg-background-secondary rounded-xl border border-border p-4">
+          <div className="glass rounded-xl p-4">
             <h3 className="font-semibold mb-4">Coming Up</h3>
             <div className="space-y-3">
               {upcomingPrograms.map((program) => (
                 <div
                   key={program.id}
-                  className="p-3 bg-background-tertiary rounded-lg hover:bg-border transition-colors"
+                  className="p-3 bg-white/[0.03] rounded-lg hover:bg-white/[0.06] transition-colors border border-white/5"
                 >
                   <p className="text-sm font-medium truncate">{program.title}</p>
                   <p className="text-xs text-foreground-secondary mt-1">
@@ -154,12 +157,13 @@ export default async function WatchPage({ params }: WatchPageProps) {
           </div>
         </div>
 
-        {/* Related Channels */}
+        {/* Related Channels -- horizontal scroll */}
         {relatedChannels.length > 0 && (
           <ChannelGrid
             channels={relatedChannels}
             title={`More ${channel.category.charAt(0).toUpperCase() + channel.category.slice(1)} Channels`}
             subtitle="You might also like"
+            layout="scroll"
           />
         )}
       </div>
