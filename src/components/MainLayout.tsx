@@ -1,7 +1,6 @@
 'use client';
 
-import Header from './Header';
-import Sidebar from './Sidebar';
+import PremiumHeader from './PremiumHeader';
 import BottomNav from './BottomNav';
 
 interface MainLayoutProps {
@@ -11,17 +10,15 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen">
-      <Header />
-      <Sidebar />
+      {/* Header */}
+      <PremiumHeader />
 
       {/* Main Content */}
-      <main className="pt-16 lg:pl-16 xl:pl-16 pb-20 lg:pb-0">
-        <div className="p-4 lg:p-6">
-          {children}
-        </div>
+      <main className="pt-20 lg:pt-24 pb-24 lg:pb-12 px-4 lg:px-6 max-w-7xl mx-auto page-enter">
+        {children}
       </main>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Bottom Navigation (Mobile) */}
       <BottomNav />
     </div>
   );

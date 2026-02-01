@@ -310,7 +310,9 @@ const generatePrograms = (channelId: string, channelName: string): Program[] => 
   let programIndex = 0;
 
   while (currentTime < new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000)) {
-    const duration = [30, 60, 90, 120][Math.floor(Math.random() * 4)];
+    // Use deterministic duration based on program index to avoid hydration mismatch
+    const durations = [30, 60, 90, 120];
+    const duration = durations[programIndex % durations.length];
     const endTime = new Date(currentTime.getTime() + duration * 60 * 1000);
 
     programs.push({
@@ -319,7 +321,8 @@ const generatePrograms = (channelId: string, channelName: string): Program[] => 
       description: `Watch ${programTitles[programIndex % programTitles.length]} on ${channelName}. Bringing you the latest updates and coverage.`,
       startTime: new Date(currentTime),
       endTime: endTime,
-      category: categories[Math.floor(Math.random() * categories.length)],
+      // Use deterministic category based on program index
+      category: categories[programIndex % categories.length],
     });
 
     currentTime = endTime;
